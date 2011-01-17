@@ -17,7 +17,7 @@ set cpo&vim " go into nocompatible-mode
 " ######## CONFIGURATION ########
 " variable js_test_driver_lib
 if !exists('js_test_driver_lib')
-    let s:js_test_driver_lib = expand('%:p:h:h') . '/lib/JsTestDriver.jar'
+    let s:js_test_driver_lib = expand('<sfile>:p:h:h') . '/lib/JsTestDriver.jar'
 else
     let s:js_test_driver_lib = js_test_driver_lib
     unlet js_test_driver_lib
@@ -25,7 +25,7 @@ endif
 
 " variable js_test_driver_bin
 if !exists('js_test_driver_bin')
-    let s:js_test_driver_bin = expand('%:p:h:h') . '/bin'
+    let s:js_test_driver_bin = expand('<sfile>:p:h:h') . '/bin'
 else
     let s:js_test_driver_bin = js_test_driver_bin
     unlet js_test_driver_bin
@@ -35,12 +35,13 @@ endif
 " ######## FUNCTIONS #########
 
 function! s:StartServer(port)
-    let cmd = '!sh ' . s:js_test_driver_bin . '/jstestserver.sh ' . s:js_test_driver_lib . a:port
+    let cmd = '!sh ' . s:js_test_driver_bin . '/jstestserver.sh ' . s:js_test_driver_lib . ' ' . a:port
+    echo cmd
     redir => output_message
     silent execute cmd
     redir END
-    let s:sid = matchstr(output_message, '\v\n\zs<\d{3,}>')
-    echo 'start server at port = ' . a:port . ' and sid = ' . s:sid
+    let s:jbid = matchstr(output_message, '\v\n\zs<\d{3,}>')
+    echo 'start server at port = ' . a:port . ' and jobs id = ' . s:jbid
 endfunction
 
 function! s:JsTestStartServer(interact, ...)
@@ -58,8 +59,8 @@ function! s:JsTestStartServer(interact, ...)
 endfunction
 
 function! s:JsTestStopServer()
-    silent execute '!kill ' . s:sid
-    echo 'stop server at sid = ' . s:sid
+    silent execute '!kill ' . s:jbid
+    echo 'stop server with jobs id = ' . s:jbid
 endfunction
 
 function! s:JsTest()
