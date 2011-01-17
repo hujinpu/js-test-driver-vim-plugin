@@ -40,6 +40,7 @@ function! s:StartServer(port)
     redir => output_message
     silent execute cmd
     redir END
+    echo output_message
     let s:jbid = matchstr(output_message, '\v\n\zs<\d{3,}>')
     echo 'start server at port = ' . a:port . ' and jobs id = ' . s:jbid
 endfunction
